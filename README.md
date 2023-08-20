@@ -4,6 +4,6 @@ This is not a cheat! it works through the [Game State Integration](https://devel
 
 # Instruction
 - crosshair.exe and Sniper-Crosshair.exe must be in the same folder
-- gamestate_integration_snipercrosshair.cfg move to Counter-Strike Global Offensive\csgo\cfg\ folder
+- gamestate_integration_snipercrosshair.cfg move to Counter-Strike Global Offensive\csgo\cfg\
 - open cs:go
 - open Sniper-Crosshair.exe as administrator
