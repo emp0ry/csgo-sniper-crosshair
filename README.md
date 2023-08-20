@@ -7,3 +7,5 @@ This is not a cheat! it works through the [Game State Integration](https://devel
 - gamestate_integration_snipercrosshair.cfg move to Counter-Strike Global Offensive\csgo\cfg\
 - open cs:go
 - open Sniper-Crosshair.exe as administrator
+
+### Crosshair only turns on when you have a sniper weapon in your hands
