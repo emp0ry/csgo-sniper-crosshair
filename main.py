@@ -27,6 +27,12 @@ def get_screen_size():
     height = user32.GetSystemMetrics(1)
     return width, height
 
+def find_key_by_value(dictionary, target_value):
+    for key, value in dictionary.items():
+        if value == target_value:
+            return key
+    return None
+
 class MyHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
@@ -36,36 +42,33 @@ class MyHandler(BaseHTTPRequestHandler):
             payload = json.loads(post_data)
             self.process_payload(payload)
         except json.JSONDecodeError:
+            width, height = get_screen_size()
+            crosshair_window.moveTo(width, height)
             print('Error decoding JSON data')
 
     def process_payload(self, payload):
-        data = payload['player']['weapons']
+        data = None
         width, height = get_screen_size()
- 
+
         try:
-            if data['weapon_1']['type'] == 'SniperRifle':
-                if data['weapon_1']['state'] == 'active':
-                    if cursor_state():
-                        x, y = int(width / 2 - 12), int(height / 2 - 12)
-                        crosshair_window.moveTo(x, y)
-                    else:
-                        crosshair_window.moveTo(width, height)
-                else:
-                    crosshair_window.moveTo(width, height)
-            elif data['weapon_1']['type'] != 'Pistol':
-                crosshair_window.moveTo(width, height)
-            elif data['weapon_2']['type'] == 'SniperRifle':
-                if data['weapon_2']['state'] == 'active':
-                    if cursor_state():
-                        x, y = int(width / 2 - 12), int(height / 2 - 12)
-                        crosshair_window.moveTo(x, y)
-                    else:
-                        crosshair_window.moveTo(width, height)
+            data = payload['player']['weapons']
+        except:
+            crosshair_window.moveTo(width, height)
+
+        if data:
+            found_keys = []
+            for key, item in data.items():
+                if 'type' in item and item['type'] == 'SniperRifle' and 'state' in item and item['state'] == 'active':
+                    found_keys.append(key)
+            if found_keys:
+                if cursor_state():
+                    x, y = int(width / 2 - 12), int(height / 2 - 12)
+                    crosshair_window.moveTo(x, y)
                 else:
                     crosshair_window.moveTo(width, height)
             else:
                 crosshair_window.moveTo(width, height)
-        except:
+        else:
             crosshair_window.moveTo(width, height)
 
 ctypes.windll.msvcrt.system(ctypes.c_char_p('cls'.encode()))
@@ -80,7 +83,7 @@ https://github.com/emp0ry/
 
 # Start crosshair.exe
 ctypes.windll.msvcrt.system(ctypes.c_char_p('start "Crosshair" crosshair.exe'.encode()))
-sleep(2)
+sleep(3)
 
 # Set up the HTTP server
 host_name = '127.0.0.1'
@@ -95,6 +98,5 @@ try:
     http_server.serve_forever()
 except KeyboardInterrupt:
     http_server.server_close()
+    ctypes.windll.msvcrt.system(ctypes.c_char_p('taskkill /f /IM crosshair.exe /t'.encode()))
     print("Server stopped.")
-
-# pyinstaller -i icon.ico --distpath ./ --workpath ./ -p ./ --clean -D -F -n Sniper-Crosshiar main.py
